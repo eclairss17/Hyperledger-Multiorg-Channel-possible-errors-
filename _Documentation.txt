@@ -1,0 +1,249 @@
+﻿I am Publishing the Possible Errors during the configuration of  Hyperledger Fabric/hyperledger composer Channel for a multiorganisation
+I have exclusively included the solution to these errors for hyperledger Fabric v1.3 in case you find it useful. 
+---------------------------------------------------------------------------------------------------------------------------
+Error: While on the issuing cards after Installing the network on business network cards 
+Possible solution : Delete all the cards and restart the installation of the network
+
+
+While Configuring Build your First Network on hyperledger Fabric
+
+
+Error: panic: runtime error: invalid memory address or nil pointer dereference
+[signal SIGSEGV: segmentation violation code=0x1 addr=0x0 pc=0x824610]
+
+
+
+
+
+
+Error: With Hyperledger Fabric v1_4 The error with $Image_Tag of the orderers and peers.
+Possible solution : This the image tag for version 1_4 hyperledger Fabric for the orderers and peers x86_64-1.0.0-rc1.
+
+
+Docker System Configuration
+Error:  ./byfn.sh up peer already in use 
+Possible solution: Follow these steps :
+check for working containers by
+docker container ls -a
+stop them by 
+docker container stop $(docker container ls -aq)
+remove them by
+docker container rm $(docker container ls -aq) or docker container rm 359ef2157721 45fd2e95ee69 ea22bfd03efe 3afe6449a657 37605a935879 07afa0628b7f 8d4402eca054
+check again 
+docker container ls -a
+start ./byfn.sh up
+
+
+Error : no policies defined 
+Possible Reasoning:
+Previously, configtxgen would auto-populate policies if they were
+omitted.  This presented some problems for specifying partial policy
+schemes, like only overriding one policy.  Support for omitting policies
+was deprecated in v1.3 and has been removed for v2.0.0.
+
+
+so add 
+ TwoOrgsChannel:
+        Consortium: SampleConsortium
+        <<: *ChannelDefaults   // (this is the edit )
+in configtx.yaml
+
+
+Error: Unable to find Export paths 
+Possible Solution: These are the possible set of export Commands that your network will require while configuring it on hyperledger fabric.
+
+
+Depending upon what your error states try the following set:
+before starting the Orderer:
+export ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+export ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+export ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+export ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+export ORDERER_GENERAL_LISTENADDRESS=192.168.2.103
+export ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+export ORDERER_GENERAL_LOGLEVEL=debug
+export ORDERER_GENERAL_GENESISMETHOD=file
+export ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+export FABRIC_CFG_PATH=/etc/hyperledger/fabric
+export ORDERER_GENERAL_TLS_ENABLED=true
+
+
+
+
+before starting the peer:
+export CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+ export CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+ export CORE_PEER_GOSSIP_ORGLEADER=false
+ export CORE_PEER_PROFILE_ENABLED=true
+ export CORE_PEER_LOCALMSPID=Org1MSP
+ export CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+ export CORE_PEER_TLS_ENABLED=true
+ export CORE_PEER_ID=peer0.org1.example.com
+ export CORE_LOGGING_LEVEL=DEBUG
+ export CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051
+ export FABRIC_CFG_PATH=/etc/hyperledger/fabric
+ export CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+ export CORE_PEER_GOSSIP_USELEADERELECTION=true
+
+
+ 
+While the configuring your channel on hyperledger fabric make sure to use the tools in the bin folder under your fabric-samples directory to inspect and configure the channel artifacts.
+Error: Cryptogen command not found 
+Possible Solution: Try the following command.
+ make cryptogen configtxgen peer orderer peer-docker orderer-docker tools-docker
+which cryptogen, should work.
+If you need to pull the fabric-tools again us the command
+ curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0 1.1.0 0.4.6
+
+
+ sudo cp ./bin/*  $GOROOT/bin/hyperledger-tools or simply  sudo cp ./bin/*  $GOROOT/bin
+ export PATH=$GOROOT/home/fabric-dev-servers/fabric-samples/bin or
+ export PATH=$GOROOT/usr/bin or export PATH=$PATH:../bin
+
+
+depending upon your system Configuration.
+
+
+The current Installation setup of the channel in Build Your First Network Configuration file works on v1_3
+After Installing the pre-requisites  use the following export command to set the path variable on the present working directory.
+
+
+ export PATH=home/rishabh/fabric-dev-servers/fabric-samples/bin:$PATH
+
+
+Running ./byfn.sh up 
+
+
+Error: error getting endorser client for channel: endorser client failed to connect to orderer.example.com:7050: failed to create new connection: context deadline exceeded
+Possible Solution:  check for orderer.yaml inside config outside first-network
+ LogLevel: debug
+Also ,
+check for in docker-compose-base.yaml
+working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer 
+
+
+Error: 
+2019-08-05 13:33:33.041 IST [main] main -> ERRO 001 Fatal error when initializing core config : error when reading core config file: Unsupported Config Type ""
+Possible Solution : Iit means it cannot find the core config file run the same command inside the docker cli
+docker exec -it cli bash
+
+
+Error: 
+error getting endorser client for channel: endorser client failed to connect to peer0.org1.example.com:7051: failed to create new connection: context deadline exceeded
+use the follwing link on browser :   https://intellipaat.com/community/6578/hyperledger-fabric-fabcar-error
+try,
+docker ps -a | grep peer0
+docker logs <peerID> |tail -20
+Similarly for the other peers to check the logs.
+
+
+Error: Ordering service endpoint  is not valid or missing
+Possible Solution: https://stackoverflow.com/questions/50937794/hyperledger-fabric-error-adding-an-organization-to-an-existing-channel
+./byfn.sh down 
+then do 
+./eyfn.sh up 
+
+
+Error: got unexpected status: BAD_REQUEST -- error authorizing update: error validating ReadSet: readset expected key [Group]  /Channel/Application at version 0, but got version 1
+Possible Solution:
+once the channel has been created use this command to start the network
+start using ./byfn.sh restart -c mychannel  (or the channel name you have configured your network with.)
+
+
+
+
+ERROR: Couldn't connect to Docker daemon - you might need to run `docker-machine start default`.
+Possible Temporary Fix:
+docker: Cannot connect to the Docker daemon at tcp://localhost:2375. Is the docker daemon running?.
+See 'docker run --help'.
+Solution : in another terminal window type sudo dockerd and run the command again.
+
+
+Error:
+error using -docker exec -it cli bash 
+start using docker-compose -f ./docker-compose.yml up cli (test see if this responds ) 
+Now if you get an error similar to this 
+docker exec -it cli bash 
+Error response from daemon: No such container: feb9f5d7f53ea2e88f258e3cfa1fbf74788ef8ac72ac662d2904c6578d994f8f
+or While using docker exec -it cli bash
+Error response from daemon: Container ae212045a4d176607477fd7a67b8c0497de389d466747316ec8c1fac2e718f8f is not running
+
+
+Possible Fix :
+use the follwing link on browser :   https://stackoverflow.com/questions/29599632/docker-container-is-not-running/45270860
+docker commit cli
+$$$$$$ output :sha256:5d5144e5e1a2c90bb455b7d28098b471330446bf1a631e2425b44db7976d9163
+then dont use this command 
+docker run -it cli bash ( In case you get the following error )
+output:
+Unable to find image 'cli:latest' locally
+docker: Error response from daemon: pull access denied for cli, repository does not exist or may require 'docker login': denied: requested access to the resource is denied.
+use the first eleven characters after sha256 i.e 5d5144e5e1a and type 
+docker run -it 5d5144e5e1a bash
+output : root@d71924404f13:/opt/gopath/src/github.com/hyperledger/fabric/peer#      (This is just a temporary solution , not suggested for actually solving the issue. Most Likely It is advisable to pull the fabric-samples again from github and start from scratch.)
+
+
+Docker Error are inevitable so Possible fixes must be there to continue but for a cycle of loops , Pull the repository again . However, If you proceed like this using commit, make sure to copy the volumes of the previously used cli container to resume your network configurations. 
+
+
+
+
+Error :
+Cannot run peer because cannot init crypto, folder "/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp" does not exist
+
+
+Try , 
+CORE_PEER_MSPCONFIGPATH correctly, you may get the following error message:
+
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+ 
+CORE_PEER_ADDRESS=peer0.org1.example.com:7051 CORE_PEER_LOCALMSPID="Org1MSP"
+ 
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+
+
+If the Error still doesn’t go , check these links 
+https://github.com/fluent/fluent-bit-docker-image/issues/19
+https://help.ubuntu.com/community/UFW
+https://forums.docker.com/t/run-command-in-stopped-container/343/2
+https://forums.docker.com/t/run-command-in-stopped-container/343/7
+
+
+The problem, with  the current error is we are not restarting the exisiting docker with the creating a new image using commit so in order to solve the error we have to restart the existing container so the peer paths given have been given in an existing container that has exited and the new container can't find those paths even after using export command.
+
+
+Error:
+error getting endorser client for channel: endorser client failed to connect to peer0.org1.example.com:7051: failed to create new connection: connection error: desc = "transport: error while dialing: dial tcp: lookup peer0.org1.example.com: no such host"
+Possible Solution: firstly in peer-base.yaml add dns_search  after image: 
+ 
+ { image: hyperledger/fabric-peer:$IMAGE_TAG
+  dns_search: .  
+ }
+
+
+ Then check docker ps -a |grep peer0
+ if you have the following error 
+
+
+Error:
+fatal error: unexpected signal during runtime execution
+Solution: 
+add environment variable {- GODEBUG=netdns=go} in docker-compose-base.yaml for orderers and peers...... and also in peer-base.yaml . It is advisable to add this environment variable in the beginning itself when you start with your network and channel configuration.
+ 
+now ./byfn.sh restart.
+
+
+
+
+Error:
+Permission denied for Installing Hyperledger Fabric binaries 
+curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0  1.1.0  0.4.6
+Solution: curl -sSL https://goo.gl/6wtTN5 |sudo -E bash -s 1.1.0  1.1.0  0.4.6
+
+
+
+
+
+
+Documentation by - Ekleen Kaur
